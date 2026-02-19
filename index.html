@@ -2,131 +2,122 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Aura Goals | With Audio Alarms</title>
+    <title>Aura Goals | Light Edition</title>
     <link rel="stylesheet" href="https://pyscript.net/releases/2024.1.1/core.css" />
     <script type="module" src="https://pyscript.net/releases/2024.1.1/core.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <script>
-        // Audio Setup
         const alarmSound = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
-        
         function playAlarm() {
             alarmSound.currentTime = 0;
-            alarmSound.play().catch(e => console.log("Audio waiting for user interaction..."));
+            alarmSound.play().catch(e => console.log("Audio waiting..."));
         }
 
-        // PDF Export Logic
         function triggerPDF() {
             const listElement = document.getElementById('goal-list');
             const goals = listElement.querySelectorAll('.goal-item');
             if(goals.length === 0) return;
-
             const pdfView = document.createElement('div');
             pdfView.style.padding = "40px";
             pdfView.style.fontFamily = "Arial, sans-serif";
             pdfView.innerHTML = `<h1 style="text-align:center; color:#1e1b4b; border-bottom:3px solid #818cf8; padding-bottom:15px; margin-bottom:30px;">MY DAILY GOALS</h1>`;
-            
             goals.forEach(goal => {
                 const title = goal.querySelector('.goal-title').innerText;
                 const date = goal.querySelector('.date-badge').innerText.replace(/\s+/g, ' ').trim();
                 const time = goal.querySelector('.goal-target-time').innerText;
                 const isDone = goal.classList.contains('completed-task');
-                
                 pdfView.innerHTML += `
                     <div style="margin-bottom:20px; padding:15px; border-left:5px solid ${isDone ? '#10b981' : '#818cf8'}; background:#f8fafc;">
                         <div style="color:#64748b; font-size:12px; font-weight:bold; text-transform:uppercase;">${date} @ ${time}</div>
-                        <div style="font-size:18px; font-weight:bold; color:#1e293b; margin-top:5px;">
-                            ${isDone ? '✓ ' : '○ '} ${title}
-                        </div>
+                        <div style="font-size:18px; font-weight:bold; color:#1e293b; margin-top:5px;">${isDone ? '✓ ' : '○ '} ${title}</div>
                     </div>`;
             });
-            html2pdf().set({ margin: 10, filename: 'Aura_Goals_Report.pdf' }).from(pdfView).save();
+            html2pdf().set({ margin: 10, filename: 'My_Aura_Goals.pdf' }).from(pdfView).save();
         }
 
         function openPicker(id) { document.getElementById(id).showPicker(); }
         
         function showNotification(taskName) {
-            playAlarm(); // Play sound immediately
+            playAlarm();
             const container = document.getElementById('notification-center');
             const toast = document.createElement('div');
             toast.className = 'toast-alert';
-            toast.innerHTML = `
-                <div style="font-weight:800; color:#f59e0b; font-size:0.7rem; margin-bottom:4px;">⏰ STARTING NOW</div>
-                <div style="font-weight:400; font-size:0.9rem;">${taskName}</div>
-            `;
+            toast.innerHTML = `<div style="font-weight:800; color:#f59e0b; font-size:0.7rem; margin-bottom:4px;">⏰ STARTING NOW</div><div style="font-weight:400; font-size:0.9rem;">${taskName}</div>`;
             container.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transform = 'translateX(50px)';
-                setTimeout(() => toast.remove(), 500);
-            }, 10000);
-            
+            setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 500); }, 10000);
             toast.onclick = () => toast.remove();
         }
     </script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;800&display=swap');
-        :root { --accent: #818cf8; --success: #10b981; --danger: #ef4444; --warning: #f59e0b; }
+        :root { --accent: #6366f1; --success: #10b981; --danger: #ef4444; --warning: #f59e0b; --text: #1e293b; }
 
         body, html { 
-            margin: 0; padding: 0; height: 100vh; background: #020617; color: white; 
-            font-family: 'Plus Jakarta Sans', sans-serif; display: flex; align-items: center; justify-content: center;
+            margin: 0; padding: 0; width: 100vw; height: 100vh; 
+            background: #f1f5f9; color: var(--text); 
+            font-family: 'Plus Jakarta Sans', sans-serif;
             overflow: hidden;
         }
 
-        .bg-layer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 10% 90%, #1e1b4b 0%, #020617 100%); z-index: -1; }
-        .dashboard { display: grid; grid-template-columns: 1fr 1.8fr; gap: 50px; width: 95%; max-width: 1200px; height: 85vh; align-items: start; position: relative; }
-        
-        #notification-center { position: fixed; top: 30px; right: 30px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-        .toast-alert { 
-            background: rgba(30, 27, 75, 0.95); backdrop-filter: blur(15px); border: 1px solid var(--warning);
-            padding: 15px 25px; border-radius: 20px; color: white; min-width: 220px; cursor: pointer;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.6); animation: slideIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); transition: 0.5s;
+        /* LIGHTER BACKGROUND GRADIENT */
+        .bg-layer { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: radial-gradient(circle at 10% 90%, #e0e7ff 0%, #f1f5f9 100%); 
+            z-index: -1; 
         }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-
+        
+        .dashboard { display: grid; grid-template-columns: 1fr 1.5fr; width: 100vw; height: 100vh; }
+        
+        .time-panel { 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            padding: 40px; background: rgba(255, 255, 255, 0.3);
+        }
+        
         .glass-panel { 
-            background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(50px); 
-            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 40px; 
-            padding: 35px; display: flex; flex-direction: column; 
-            box-shadow: 0 40px 100px rgba(0,0,0,0.5); height: 100%; box-sizing: border-box; overflow: hidden;
+            background: rgba(255, 255, 255, 0.6); 
+            backdrop-filter: blur(20px); 
+            border-left: 1px solid rgba(255, 255, 255, 0.5); 
+            padding: 60px; display: flex; flex-direction: column; height: 100vh; box-sizing: border-box;
         }
         
-        .board-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-shrink: 0; }
-        .board-title { font-size: 1.5rem; font-weight: 800; letter-spacing: 4px; color: var(--accent); border-left: 4px solid var(--accent); padding-left: 15px; }
+        .board-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-shrink: 0; }
+        .board-title { font-size: 1.8rem; font-weight: 800; letter-spacing: 4px; color: var(--accent); border-left: 4px solid var(--accent); padding-left: 15px; }
 
-        .input-stack { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; flex-shrink: 0; }
+        .input-stack { display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px; flex-shrink: 0; }
         
         .clickable-wrapper { 
             position: relative; display: flex; align-items: center; flex: 1; cursor: pointer;
-            background: rgba(0,0,0,0.4); border-radius: 15px; border: 1px solid rgba(255,255,255,0.1);
+            background: white; border-radius: 15px; border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
-        .clickable-wrapper svg { position: absolute; left: 15px; width: 20px; height: 20px; color: var(--accent); pointer-events: none; }
-        .clickable-wrapper input { width: 100%; background: transparent; border: none; padding: 15px 15px 15px 45px; color: white; outline: none; cursor: pointer; }
-        input::-webkit-calendar-picker-indicator { opacity: 0; cursor: pointer; position: absolute; left:0; top:0; width:100%; height:100%; }
+        .clickable-wrapper svg { position: absolute; left: 15px; width: 20px; color: var(--accent); pointer-events: none; }
+        .clickable-wrapper input { width: 100%; background: transparent; border: none; padding: 15px 15px 15px 45px; color: var(--text); outline: none; cursor: pointer; }
 
-        .add-btn { background: var(--accent); color: white; border: none; padding: 16px; border-radius: 15px; font-weight: 800; cursor: pointer; transition: 0.3s; flex-shrink: 0; }
-        .pdf-btn { background: rgba(129, 140, 248, 0.1); color: var(--accent); border: 1px solid var(--accent); padding: 8px 15px; border-radius: 12px; font-weight: 800; cursor: pointer; font-size: 0.7rem; }
+        .add-btn { background: var(--accent); color: white; border: none; padding: 18px; border-radius: 15px; font-weight: 800; cursor: pointer; transition: 0.3s; }
+        .pdf-btn { background: white; color: var(--accent); border: 1px solid var(--accent); padding: 10px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; }
 
-        #goal-list { flex: 1; overflow-y: auto; padding-right: 10px; margin-top: 10px; display: flex; flex-direction: column; }
+        #goal-list { flex: 1; overflow-y: auto; padding-right: 15px; display: flex; flex-direction: column; }
         #goal-list::-webkit-scrollbar { width: 6px; }
-        #goal-list::-webkit-scrollbar-thumb { background: rgba(129, 140, 248, 0.2); border-radius: 10px; }
+        #goal-list::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
 
-        .goal-item { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 20px; margin-bottom: 12px; display: flex; align-items: center; min-height: 80px; flex-shrink: 0; transition: 0.5s; }
-        .starting-soon { border: 1px solid var(--warning) !important; box-shadow: 0 0 15px rgba(245, 158, 11, 0.2); }
-        .completed-task { opacity: 0.4; background: rgba(16, 185, 129, 0.05); border: 1px solid transparent; }
+        .goal-item { background: white; border: 1px solid rgba(0,0,0,0.05); border-radius: 20px; margin-bottom: 15px; display: flex; align-items: center; min-height: 90px; flex-shrink: 0; transition: 0.5s; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .starting-soon { border: 1px solid var(--warning) !important; box-shadow: 0 0 20px rgba(245, 158, 11, 0.2); }
+        .completed-task { opacity: 0.5; filter: grayscale(0.8); }
         
-        .date-badge { background: var(--accent); width: 70px; height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 800; border-radius: 20px 0 0 20px; flex-shrink: 0; }
-        .goal-content { flex: 1; padding-left: 20px; }
-        .actions-wrapper { display: flex; align-items: center; gap: 10px; margin-right: 20px; }
+        .date-badge { background: var(--accent); width: 80px; height: 90px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 800; border-radius: 20px 0 0 20px; color: white; }
+        .goal-content { flex: 1; padding: 0 25px; }
+        .goal-title { font-size: 1.1rem; font-weight: 800; color: #334155; }
         
-        .done-trigger { background: rgba(16, 185, 129, 0.1); border: 2px solid var(--success); color: var(--success); padding: 8px 15px; border-radius: 12px; font-weight: 800; font-size: 0.6rem; cursor: pointer; }
-        .remove-trigger { background: transparent; color: var(--danger); border: 1px solid var(--danger); border-radius: 50%; width: 25px; height: 25px; cursor: pointer; font-weight: bold; }
+        .done-trigger { background: rgba(16, 185, 129, 0.1); border: 2px solid var(--success); color: var(--success); padding: 8px 18px; border-radius: 12px; font-weight: 800; font-size: 0.7rem; cursor: pointer; margin-right: 15px; }
+        .remove-trigger { background: transparent; color: var(--danger); border: 1px solid var(--danger); border-radius: 50%; width: 30px; height: 30px; cursor: pointer; margin-right: 25px; }
         
-        .time-panel h1 { font-size: 6.5rem; font-weight: 800; margin:0; letter-spacing: -5px; }
+        .time-panel h1 { font-size: 9rem; font-weight: 800; margin:0; letter-spacing: -6px; color: var(--text); }
+        
+        #notification-center { position: fixed; top: 30px; right: 30px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
+        .toast-alert { background: white; border-left: 5px solid var(--warning); padding: 20px; border-radius: 10px; color: var(--text); min-width: 250px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); animation: slideIn 0.5s ease-out; }
+        @keyframes slideIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
     </style>
 </head>
 <body>
@@ -135,16 +126,16 @@
     <div class="dashboard">
         <div class="time-panel">
             <h1 id="clock">00:00</h1>
-            <div id="date-full" style="opacity:0.5; letter-spacing:3px;">LOADING...</div>
+            <div id="date-full" style="opacity:0.6; letter-spacing:4px; font-size: 1.2rem; margin-top: 15px;">LOADING...</div>
         </div>
         <div class="glass-panel">
             <div class="board-header">
                 <h2 class="board-title">To Do List</h2>
-                <button class="pdf-btn" onclick="triggerPDF()">PDF REPORT</button>
+                <button class="pdf-btn" onclick="triggerPDF()">DOWNLOAD REPORT</button>
             </div>
             
             <div class="input-stack">
-                <input type="text" id="goal_in" placeholder="New Task..." style="background:rgba(0,0,0,0.4); border-radius:15px; border:1px solid rgba(255,255,255,0.1); padding:15px; color:white;">
+                <input type="text" id="goal_in" placeholder="New Task..." style="background:white; border-radius:15px; border:1px solid rgba(0,0,0,0.1); padding:18px; color:var(--text); font-size: 1rem;">
                 <div style="display:flex; gap:10px;">
                     <div class="clickable-wrapper" onclick="openPicker('date_in')">
                         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
@@ -155,7 +146,7 @@
                         <input type="time" id="time_in">
                     </div>
                 </div>
-                <button class="add-btn" id="activate_btn">ADD TO LIST</button>
+                <button class="add-btn" id="activate_btn">ADD TASK</button>
             </div>
 
             <div id="goal-list"></div>
@@ -173,22 +164,19 @@
 
         def update_clock():
             now = datetime.now()
-            current_time_str = now.strftime("%H:%M")
-            current_date_str = now.strftime("%Y-%m-%d")
-            
-            document.getElementById("clock").innerText = current_time_str
+            ct_str, cd_str = now.strftime("%H:%M"), now.strftime("%Y-%m-%d")
+            document.getElementById("clock").innerText = ct_str
             document.getElementById("date-full").innerText = now.strftime("%A, %B %d")
             
             goals = load_goals()
             needs_refresh = False
             for idx, g in enumerate(goals):
-                if not g.get('done') and g['date'] == current_date_str and g['time'] == current_time_str:
-                    task_id = f"{g['text']}-{g['time']}"
-                    if task_id not in ALARMED_TASKS:
+                if not g.get('done') and g['date'] == cd_str and g['time'] == ct_str:
+                    tid = f"{g['text']}-{g['time']}"
+                    if tid not in ALARMED_TASKS:
                         window.showNotification(g['text'])
-                        ALARMED_TASKS.add(task_id)
+                        ALARMED_TASKS.add(tid)
                         needs_refresh = True
-            
             if needs_refresh: refresh_ui()
 
         def load_goals():
@@ -208,54 +196,38 @@
             for idx, g in enumerate(goals):
                 is_done = g.get('done', False)
                 is_active = not is_done and g['date'] == curr_d and g['time'] == curr_t
-                
                 try:
                     dt = datetime.strptime(g['date'], '%Y-%m-%d')
                     m, d = dt.strftime('%b'), dt.strftime('%d')
                 except: m, d = "??", "??"
-
                 item = document.createElement("div")
                 item.className = f"goal-item {'completed-task' if is_done else ''} {'starting-soon' if is_active else ''}"
-                done_btn = f'<button class="done-trigger" id="done-{idx}">DONE</button>' if not is_done else '<span style="color:var(--success); font-weight:800; font-size:0.6rem;">FINISHED</span>'
-                
+                done_btn = f'<button class="done-trigger" id="done-{idx}">DONE</button>' if not is_done else '<span style="color:var(--success); font-weight:800; font-size:0.7rem; margin-right:15px;">FINISHED</span>'
                 item.innerHTML = f"""
                     <div class="date-badge"><span>{m}</span><span>{d}</span></div>
                     <div class="goal-content">
-                        <div class="goal-title" style="font-weight:800;">{g['text']}</div>
-                        <div style="font-size:0.7rem; color:var(--accent);">⏰ <span class="goal-target-time">{g['time']}</span></div>
+                        <div class="goal-title">{g['text']}</div>
+                        <div style="font-size:0.8rem; color:var(--accent);">⏰ <span class="goal-target-time">{g['time']}</span></div>
                     </div>
-                    <div class="actions-wrapper">
+                    <div style="display:flex; align-items:center;">
                         {done_btn}
                         <button class="remove-trigger" id="del-{idx}">✕</button>
-                    </div>
-                """
+                    </div>"""
                 container.appendChild(item)
-                
                 if not is_done:
                     def handle_done(e, i=idx):
-                        data = load_goals()
-                        data[i]['done'] = True
-                        save_goals(data)
-                        refresh_ui()
+                        data = load_goals(); data[i]['done'] = True; save_goals(data); refresh_ui()
                     document.getElementById(f"done-{idx}").onclick = create_proxy(handle_done)
-
                 def handle_del(e, i=idx):
-                    data = load_goals()
-                    data.pop(i)
-                    save_goals(data)
-                    refresh_ui()
+                    data = load_goals(); data.pop(i); save_goals(data); refresh_ui()
                 document.getElementById(f"del-{idx}").onclick = create_proxy(handle_del)
 
         def add_item(e):
             t, d, m = document.getElementById("goal_in").value, document.getElementById("date_in").value, document.getElementById("time_in").value
             if t and d and m:
-                goals = load_goals()
-                goals.append({"text": t, "date": d, "time": m, "done": False})
-                save_goals(goals)
-                document.getElementById("goal_in").value = ""
-                refresh_ui()
-                container = document.getElementById("goal-list")
-                container.scrollTop = container.scrollHeight
+                goals = load_goals(); goals.append({"text": t, "date": d, "time": m, "done": False}); save_goals(goals)
+                document.getElementById("goal_in").value = ""; refresh_ui()
+                document.getElementById("goal-list").scrollTop = 0
 
         document.getElementById("activate_btn").onclick = create_proxy(add_item)
         update_clock()
